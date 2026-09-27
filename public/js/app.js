@@ -16,6 +16,7 @@
     screenedOutSubmitted: false,
     surveyStartedAt: new Date().toISOString(),
     website: "",
+    consentGiven: false,
   };
 
   const sectionById = new Map(questionnaire.sections.map((section) => [section.id, section]));
@@ -74,9 +75,25 @@
         <div class="prose">
           ${questionnaire.studyDescription.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
         </div>
+        <div class="participant-info" aria-labelledby="researcher-info-heading">
+          <h3 id="researcher-info-heading">Researcher Information</h3>
+          <p><strong>Researcher:</strong> Shashank Tiwari</p>
+          <p><strong>Affiliation:</strong> Alkesh Dinesh Mody Institute for Financial &amp; Management Studies, University of Mumbai</p>
+          <p>This survey is being conducted solely for academic research purposes.</p>
+
+          <h3>Participation &amp; Confidentiality</h3>
+          <p>Participation in this study is voluntary. The survey will take approximately <strong>5–7 minutes</strong> to complete.</p>
+          <p>Your responses will be used only for academic research and will be analysed in aggregate. Individual responses will not be identified in the research findings or publications.</p>
+          <p>Please answer the questions based on your professional experience and perceptions. You may discontinue the survey at any time before submitting your response.</p>
+          <p>By proceeding with the survey, you confirm that you have read the information above and voluntarily agree to participate in this study.</p>
+        </div>
         ${renderHoneypotField()}
+        <label class="consent-control">
+          <input type="checkbox" id="consent-confirmation"${state.consentGiven ? " checked" : ""}>
+          <span>I have read the information above and voluntarily agree to participate in this study.</span>
+        </label>
         <div class="form-actions">
-          <button class="button button-primary" type="button" data-action="continue">Continue</button>
+          <button class="button button-primary" type="button" data-action="continue"${state.consentGiven ? "" : " disabled"}>Start Survey</button>
         </div>
       </section>
     `;
@@ -371,6 +388,10 @@
       return;
     }
 
+    if (state.screenIndex === 0 && !state.consentGiven) {
+      return;
+    }
+
     saveCurrentAnswers();
     state.submissionError = "";
     const section = getCurrentSection();
@@ -635,6 +656,12 @@
   }
 
   root.addEventListener("change", (event) => {
+    if (event.target.matches("#consent-confirmation")) {
+      state.consentGiven = event.target.checked;
+      render();
+      return;
+    }
+
     if (event.target.matches("input[type='radio'], input[type='checkbox']")) {
       saveCurrentAnswers();
     }
