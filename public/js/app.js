@@ -77,13 +77,11 @@
         </div>
         <div class="participant-info" aria-labelledby="researcher-info-heading">
           <h3 id="researcher-info-heading">Researcher Information</h3>
-          <p><strong>Researcher:</strong> Shashank Tiwari</p>
+          <p><strong>Researcher:</strong> Shashank Tiwari <a href="https://www.linkedin.com/in/ishashankt" target="_blank"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAACDUlEQVR4nO2YO0sDQRDHVyxsxUqwVVs/gZWdGiz9EqI5xdwWYqEE7FJY2FlYWlvYxIjmiagkuxGNwSKFEsTEPIzvjOyteWhynHfC3R7sH4bjdpa5+e3MLsciJCUlJSW21PQMUukhwrSKMAWbrIowDSGVeP6XPCYbNiYNOua3vvLOJw/cyLQFAK1tBEieAlLpgQUAUhGoAmXzAHrBfElAShzQQoQ/2bsdEKalk/zoegKOrotQff2A42wRRtYS9kCYVrcgSlxLul2HmSKvhCsAFiLayrer8vLB28kVAIrbK+Dje4BBsEqEMgUYdtUewG4/hbwxQPPhTmPjRn41BWjppDXH+70Ay2fsnLcJYP4YuomNG/mHVuIQOMhB+rYKz2+f8Fh711pxbvcK+pZixpV0EmDMn4B8+RX0dJorw+BKnFdJRIDsfQ2MFMoUoEeJignwV01upfRbyUmAz3pd6/+JzSTMbqcheFnoOm8nccc3umgAq3s3PDHW474k9C7GYP/ioWPeVf6pdaKJBDCAoz+PSl8SxgPnHfNKz+/6vyVOAdTrbf6mEehXYzpzw2IBcH/YfCwsAagEaEgCYAlAJQCSAGbVLYg3yj/w29j4X/xmYuH/Aoh0taiSknkAdj/vdOK4YSRopQIecSqQmjIPwKvgdzx5TNetJd+EINPa/byde0Jl3yJB6ysvJSUlhWzSF9z1VFjYNi3YAAAAAElFTkSuQmCC" alt="linkedin"></a></p>
           <p><strong>Affiliation:</strong> Alkesh Dinesh Mody Institute for Financial &amp; Management Studies, University of Mumbai</p>
           <p>This survey is being conducted solely for academic research purposes.</p>
-
           <h3>Participation &amp; Confidentiality</h3>
-          <p>Participation in this study is voluntary. The survey will take approximately <strong>5–7 minutes</strong> to complete.</p>
-          <p>Your responses will be used only for academic research and will be analysed in aggregate. Individual responses will not be identified in the research findings or publications.</p>
+          <p>Participation in this study is voluntary. The survey will take approximately <strong>2 - 3 minutes</strong> to complete.</p>
           <p>Please answer the questions based on your professional experience and perceptions. You may discontinue the survey at any time before submitting your response.</p>
           <p>By proceeding with the survey, you confirm that you have read the information above and voluntarily agree to participate in this study.</p>
         </div>
@@ -658,7 +656,10 @@
   root.addEventListener("change", (event) => {
     if (event.target.matches("#consent-confirmation")) {
       state.consentGiven = event.target.checked;
-      render();
+      const startButton = root.querySelector("[data-action='continue']");
+      if (startButton) {
+        startButton.disabled = !state.consentGiven;
+      }
       return;
     }
 
