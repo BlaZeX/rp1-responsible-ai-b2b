@@ -163,6 +163,7 @@
         ${isLikertSection ? `<p class="vendor-reminder">${escapeHtml(sameVendorReminder)}</p>` : ""}
         <form class="survey-form" action="#" method="post" novalidate>
           ${section.questions.map(renderQuestion).join("")}
+          ${state.submissionError ? `<p class="validation-message submit-error" role="alert">${escapeHtml(state.submissionError)}</p>` : ""}
           ${renderActions({
             showBack: state.screenIndex > 0,
             primaryLabel: "Continue",
@@ -265,7 +266,7 @@
         ${
           includeSubmit
             ? `<button class="button button-primary" type="button" data-action="submit"${disabled}>${submitLabel}</button>`
-            : `<button class="button button-primary" type="button" data-action="continue">${escapeHtml(primaryLabel)}</button>`
+            : `<button class="button button-primary" type="button" data-action="continue"${disabled}>${escapeHtml(primaryLabel)}</button>`
         }
       </div>
     `;
@@ -366,7 +367,12 @@
   }
 
   async function continueSurvey() {
+    if (state.submitting) {
+      return;
+    }
+
     saveCurrentAnswers();
+    state.submissionError = "";
     const section = getCurrentSection();
 
     if (section) {
@@ -401,7 +407,19 @@
       return true;
     }
 
-    await submitScreenedOutOnce(matchedRule.questionId);
+    state.submitting = true;
+    render();
+
+    try {
+      await submitScreenedOutOnce(matchedRule.questionId);
+    } catch (error) {
+      state.submitting = false;
+      state.submissionError = submitFailureMessage();
+      render();
+      return true;
+    }
+
+    clearAnswersFromMemory();
     state.screenIndex = screens.length;
     screens[state.screenIndex] = { type: "screened-out", rule: matchedRule };
     render();
@@ -523,7 +541,8 @@
     try {
       await postSurveyPayload(buildScreenedOutPayload(failedAt));
     } catch (error) {
-      // Do not continue screened-out respondents into the questionnaire if this fails.
+      state.screenedOutSubmitted = false;
+      throw error;
     }
   }
 
